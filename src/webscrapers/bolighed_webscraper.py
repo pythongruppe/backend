@@ -12,6 +12,7 @@ columns_to_drop = [
     "is_lot",
     "latest_price_change",
     "local_url",
+    "id",
     "mtid",
     "stid",
     "price_change",
