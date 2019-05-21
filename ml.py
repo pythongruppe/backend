@@ -24,7 +24,7 @@ cash_predictor = create_predictor(data, "cash_price", ('address', 'city', 'prope
 monthly_payment_predictor = create_predictor(data, "monthly_payment", ('address', 'city', 'property_type'))
 down_payment_predictor = create_predictor(data, "down_payment", ('address', 'city', 'property_type'))
 
-print(cash_predictor.pre, monthly_payment_predictor, down_payment_predictor.predict())
+print(cash_predictor, monthly_payment_predictor, down_payment_predictor)
 
 # print(X_train.shape, y_train.shape)
 
