@@ -1,7 +1,6 @@
 import requests
 import json
 import pandas as pd
-import os
 from common import create_arg_parser, write_or_append
 
 columns_to_keep = [
