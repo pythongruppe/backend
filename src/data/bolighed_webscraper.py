@@ -2,7 +2,7 @@ import requests
 import json
 import pandas as pd
 import os
-from common import create_arg_parser
+from common import create_arg_parser, write_or_append
 
 columns_to_keep = [
     'address_text',
@@ -71,15 +71,4 @@ if __name__ == '__main__':
     args = vars(parser.parse_args())
     save = args['save']
     found = get_all_results(args['max_results'])
-
-    if args['append']:
-        exists = os.path.isfile(save)
-        current = pd.read_csv(save) if exists else pd.DataFrame()
-        pd.concat([current, found], ignore_index=True, sort=True).to_csv(save, index=False)
-        if exists:
-            print(f'Merged with {save}')
-        else:
-            print(f'Appended to {save}')
-    else:
-        found.to_csv(save, index=False)
-        print(f'Saved to {save}')
+    write_or_append(save, found, args['append'])
