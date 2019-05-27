@@ -1,4 +1,5 @@
-# Created by https://www.gitignore.io/api/pycharm+all
+__pycache__/*
+
 # Edit at https://www.gitignore.io/?templates=pycharm+all
 
 ### PyCharm+all ###
