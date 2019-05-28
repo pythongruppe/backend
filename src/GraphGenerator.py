@@ -16,10 +16,13 @@ class GraphGenerator:
         def f(code):
             return str(from_code(code))
         types = list(map(f, data.keys()))
-        plt.bar(types, data.values())
-        plt.xticks(rotation=90)
-        plt.subplots_adjust(bottom=0.25)
-        return plt.figure()
+        fig = plt.figure()
+        ax = fig.gca()
+        ax.bar(types, data.values())
+        for tick in ax.get_xticklabels():
+            tick.set_rotation(90)
+        fig.subplots_adjust(bottom=0.25)
+        return fig
 
 def get_xml(fig):
     imgdata = StringIO()
