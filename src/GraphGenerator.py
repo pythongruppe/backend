@@ -1,4 +1,4 @@
-import statistics as stats
+import national_statistics as stats
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
