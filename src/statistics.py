@@ -29,4 +29,4 @@ def order_x_by_y(df, x, y, min_count=10):
         if count >= min_count:
             y_mean[key] = y_sum / count
     
-    return sorted(y_mean.items(), key=operator.itemgetter(1), reverse=True)
+    return dict(sorted(y_mean.items(), key=operator.itemgetter(1), reverse=True))

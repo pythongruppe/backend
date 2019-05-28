@@ -13,6 +13,8 @@ class PropertyType(Enum):
     VILLALEHLIGHED = 9
     ANDET = 10
 
+    def __str__(self):
+        return super(PropertyType, self).__str__()[13:]
 
 def to_code(string):
     for enum in PropertyType:
