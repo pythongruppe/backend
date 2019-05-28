@@ -35,6 +35,7 @@ columns_to_rename = {
 def get_results_for_page(page_number, page_size):
     offset = (page_number - 1) * page_size
     url = f'https://bolighed.dk/api/external/market/propertyforsale/?limit={page_size}&offset={offset}&view=list&ordering=mtid'
+    print(f'Fetching page number {page_number} from {url}')
     response = requests.get(url)
     return json.loads(response.content)['results']
 
@@ -44,7 +45,6 @@ def get_all_results(max_results):
     page_number = 1
     page_size = 1000
     while True:
-        print(f'Fetching page number {page_number}')
         page_results = get_results_for_page(page_number, page_size)
         results.extend(page_results)
         page_number += 1

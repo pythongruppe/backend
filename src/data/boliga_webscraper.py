@@ -24,6 +24,7 @@ columns_to_rename = {
 
 def get_results_for_page(page_number, page_size):
     url = f'https://api.boliga.dk/api/v2/search/results?page={page_number}&pageSize={page_size}'
+    print(f'Fetching page number {page_number} from {url}')
     response = requests.get(url)
     return json.loads(response.content)['results']
 
@@ -31,9 +32,8 @@ def get_results_for_page(page_number, page_size):
 def get_all_results(max_results):
     results = []
     page_number = 1
-    page_size = 1000
+    page_size = 500  # 500 is the max boliga allows
     while True:
-        print(f'Fetching page number {page_number}')
         page_results = get_results_for_page(page_number, page_size)
         results.extend(page_results)
         page_number += 1

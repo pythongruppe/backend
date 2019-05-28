@@ -17,15 +17,17 @@ def create_predictor(data, target, drop_columns):
 
 if __name__ == '__main__':
     df = pd.read_csv("properties.csv")
-    cash_predictor = create_predictor(df, "cash_price", ('address', 'city', 'property_type'))
-    monthly_payment_predictor = create_predictor(df, "monthly_payment", ('address', 'city', 'property_type'))
-    down_payment_predictor = create_predictor(df, "down_payment", ('address', 'city', 'property_type'))
-
+    to_drop = ['address', 'city', 'property_type']
+    cash_predictor = create_predictor(df, "cash_price", to_drop)
+    df = df.drop(columns=[*to_drop], axis=1)
+    
     mean = 0
-    for row in df.rows:
-        actual = row['cash_price']
-        prediction = cash_predictor.predict(row)
+    test = df.iloc[:100]
+    predictions = cash_predictor.predict(test.drop('cash_price', axis=1))
+    for i in range(100):
+        actual = test.iloc[i]['cash_price']
+        prediction = predictions[i]
         print(f'actual={actual}, prediction={prediction}, diff={abs(actual - prediction)}')
         mean += prediction
 
-    print(f'mean={mean / len(df)}')
+    print(f'mean={mean / 100}')
