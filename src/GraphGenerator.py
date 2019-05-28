@@ -16,12 +16,15 @@ class GraphGenerator:
         def f(code):
             return str(from_code(code))
         types = list(map(f, data.keys()))
+        return self.create_bar_graph(types, data.values(), bottom_pad=0.25)
+
+    def create_bar_graph(self, keys, values, bottom_pad=0.0):
         fig = plt.figure()
         ax = fig.gca()
-        ax.bar(types, data.values())
+        ax.bar(keys, values)
         for tick in ax.get_xticklabels():
             tick.set_rotation(90)
-        fig.subplots_adjust(bottom=0.25)
+        fig.subplots_adjust(bottom=bottom_pad)
         return fig
 
 def get_xml(fig):
