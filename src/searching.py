@@ -32,7 +32,6 @@ class SearchParameters:
 
 def search(df, parameters: SearchParameters):
     query = create_query(parameters)
-    print(query)
     return df.query(query)
 
 
@@ -78,6 +77,9 @@ if __name__ == '__main__':
     start = time.time()
     search_parameters = SearchParameters()
     search_parameters.cash_price_max = 5_000_000
+    search_parameters.cash_price_min = 1_000_000
+    search_parameters.rooms_min = 4
+    search_parameters.area_property_min = 200
     data = pd.read_csv('new_data.csv')
     print(len(data))
     results = search(data, search_parameters)

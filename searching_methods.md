@@ -307,3 +307,40 @@ The results:
 0.4589419364929199
 max=4999999
 ````
+
+## Scaling: `masks` vs `DataFrame.query`
+
+Using more parameters:
+
+````python
+search_parameters = SearchParameters()
+search_parameters.cash_price_max = 5_000_000
+search_parameters.cash_price_min = 1_000_000
+search_parameters.rooms_min = 4
+search_parameters.area_property_min = 200
+````
+
+The results for numpy masks:
+````
+(base) C:\Users\Thomas\Documents\Datamatiker\4.semester\python\exam-backend>python src/searching.py
+134461
+40029
+0.4519987106323242
+max=4999999
+````
+
+The results for ``DataFrame.query``:
+
+````
+(base) C:\Users\Thomas\Documents\Datamatiker\4.semester\python\exam-backend>python src/searching.py
+134461
+40029
+0.4669992923736572
+max=4999999
+````
+
+## Conclusion
+
+* Manual `for`-loops with python `if`-statements are too slow.
+* The performance of numpy masks and ``DataFrame.query`` are the same.
+* The performance of numpy masks and ``DataFrame.query`` does not suffer when the number of search parameters increase.
