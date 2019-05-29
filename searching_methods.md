@@ -341,6 +341,4 @@ max=4999999
 
 ## Conclusion
 
-* Manual `for`-loops with python `if`-statements are too slow.
-* The performance of numpy masks and ``DataFrame.query`` are the same.
-* The performance of numpy masks and ``DataFrame.query`` does not suffer when the number of search parameters increase.
+Manual `for`-loops 
