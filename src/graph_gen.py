@@ -1,6 +1,6 @@
-import data_processing.sort as stats
+import processing.sort as stats
 import matplotlib.pyplot as plt
-from data_collection.types import from_code
+from collection.types import from_code
 from io import StringIO
 import urllib.parse
 

@@ -1,9 +1,9 @@
 from flask import Flask, request
 from src.Memory import input_to_database
-from src.data_processing.filtering import FilterParameters, filter_data_frame
+from src.processing.filtering import FilterParameters, filter_data_frame
 import pandas as pd
 from rest_errors import json_error
-from src.data_processing.numeric import find_min_mean_max
+from src.processing.numeric import find_min_mean_max
 import traceback
 
 app = Flask(__name__)
