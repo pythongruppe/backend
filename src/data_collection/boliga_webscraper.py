@@ -6,7 +6,7 @@ from common import create_arg_parser, write_or_append
 columns_to_keep = [
     'basementSize', 'buildYear', 'city', 'latitude', 'longitude', 'lotSize',
     'price', 'propertyType', 'rooms', 'size', 'squaremeterPrice',
-    'street', 'zipCode'
+    'street', 'zipCode', 'createdDate'
 ]
 
 columns_to_rename = {
@@ -18,9 +18,9 @@ columns_to_rename = {
     'buildYear': 'year',
     'squaremeterPrice': 'sq_meter_price',
     'exp': 'monthly_payment',
-    'propertyType': 'property_type'
+    'propertyType': 'property_type',
+    'createdDate': 'created'
 }
-
 
 def get_results_for_page(page_number, page_size):
     url = f'https://api.boliga.dk/api/v2/search/results?page={page_number}&pageSize={page_size}'

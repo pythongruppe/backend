@@ -1,6 +1,7 @@
 from enum import Enum
 
 
+# values from boliga.dk
 class PropertyType(Enum):
     VILLA = 1
     RÆKKEHUS = 2
@@ -12,6 +13,7 @@ class PropertyType(Enum):
     FRITIDSGRUND = 8
     VILLALEHLIGHED = 9
     ANDET = 10
+    FRITIDSBOLIG = 11
 
     def __str__(self):
         return super(PropertyType, self).__str__()[13:]
