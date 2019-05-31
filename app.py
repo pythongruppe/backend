@@ -7,7 +7,6 @@ import traceback
 from src.Memory import Memory
 from flask import Response, jsonify
 from flask_cors import CORS
-import numpy as np
 from src.collection.types import PropertyType
 
 app = Flask(__name__)
