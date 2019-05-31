@@ -5,11 +5,10 @@ from rest_errors import json_error
 from src.processing.numeric import find_min_mean_max
 import traceback
 from src.Memory import Memory
-import json
 from flask import Response, jsonify
 from flask_cors import CORS
 import numpy as np
-import simplejson as json
+from src.collection.types import PropertyType
 
 app = Flask(__name__)
 CORS(app)
@@ -33,10 +32,16 @@ def filter_stats():
         statistics = prepare(find_min_mean_max(results, ['area_estate', 'area_property', 'cash_price', 'rooms']))
         paginated = prepare(paginate(results, 50, page)).to_dict('records')
         response = {'statistics': statistics.to_dict(), 'count': len(results), 'results': paginated}
-        return json.dumps(response), 200
+        return jsonify(response), 200
     except TypeError as e:
         traceback.print_exc()
         return json_error("Illegal filter parameters", 422, e)
+
+
+@app.route('/property-types', methods=['GET'])
+def get_property_types():
+    types = [{'name': t.name, 'value': t.value} for t in PropertyType]
+    return jsonify(types)
 
 
 def prepare(df):
