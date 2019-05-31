@@ -32,5 +32,5 @@ def sanitize(data):
     zero_to_nan = ['area_basement', 'area_estate', 'area_property', 'cash_price', 'down_payment', 'rooms', 'year']
     columns = data.columns.intersection(zero_to_nan)
     data[columns] = data[columns].replace(0.0, np.NaN)
-    data = data[data['cash_price'] >= 1]
+    data = data[data['cash_price'] >= 10_000]  # ignore false data
     return data

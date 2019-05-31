@@ -1,4 +1,3 @@
-import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
@@ -13,21 +12,3 @@ def create_predictor(data, target, drop_columns):
     model.fit(x_train, y_train)
 
     return model
-
-
-if __name__ == '__main__':
-    df = pd.read_csv("properties.csv")
-    to_drop = ['address', 'city', 'property_type']
-    cash_predictor = create_predictor(df, "cash_price", to_drop)
-    df = df.drop(columns=[*to_drop], axis=1)
-    
-    mean = 0
-    test = df.iloc[:100]
-    predictions = cash_predictor.predict(test.drop('cash_price', axis=1))
-    for i in range(100):
-        actual = test.iloc[i]['cash_price']
-        prediction = predictions[i]
-        print(f'actual={actual}, prediction={prediction}, diff={abs(actual - prediction)}')
-        mean += prediction
-
-    print(f'mean={mean / 100}')

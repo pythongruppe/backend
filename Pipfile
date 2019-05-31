@@ -19,6 +19,7 @@ requests = "*"
 numpy = "==1.16.3"
 icc-rt = "*"
 mkl = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"

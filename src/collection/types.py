@@ -18,6 +18,7 @@ class PropertyType(Enum):
     def __str__(self):
         return super(PropertyType, self).__str__()[13:]
 
+
 def to_code(string):
     for enum in PropertyType:
         if string.lower() in str(enum).lower():
