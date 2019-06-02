@@ -28,7 +28,10 @@ class FilterParameters:
 
 def filter_data_frame(df, parameters: FilterParameters):
     query = create_pandas_query(parameters)
-    return df.query(query)
+    if len(query.strip()) < 1:
+        return df
+    else:
+        return df.query(query)
 
 
 def create_pandas_query(parameters: FilterParameters):
