@@ -7,7 +7,10 @@ import traceback
 from src.Memory import Memory
 from flask import Response, jsonify
 from flask_cors import CORS
+import json
 import numpy as np
+import pandas as pd
+from src.machine_learning.estate_type_prediction import create_estimator
 from src.collection.types import PropertyType
 
 app = Flask(__name__)
@@ -46,6 +49,19 @@ def get_property_types():
 
 def prepare(df):
     return df.fillna('NaN')
+
+
+@app.route('/estate', methods=['POST'])
+def get_estate_prediction():
+    data = request.data
+
+    user_data = json.loads(data)
+    user_data_df = pd.DataFrame([user_data])
+    predictor = create_estimator(memory.data)
+    prediction = predictor(user_data_df)
+    print(prediction)
+    return 'everything ok'
+
 
 
 @app.route('/', methods=['GET', 'POST'])

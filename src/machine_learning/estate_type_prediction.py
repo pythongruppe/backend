@@ -1,12 +1,15 @@
 from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
 
-def create_estimator(data, user_data):
+def create_estimator(data):
     knn = KNeighborsClassifier()
-    data.drop(('address'), inplace=True, axis=1)
-    data.drop(('city'), inplace=True, axis=1)
+    print(data)
     y = data['property_type']
-    data.drop(('property_type'), inplace=True, axis=1)
+    data.drop(columns=['street', 'city', 'property_type', 'latitude', 'longitude',\
+    'created', 'area_basement', 'area_estate', 'area_estate'], axis=1, inplace=True)
+    data.fillna(data.mean(), inplace=True)
     knn.fit(data, y)
-    pred = knn.predict(user_data)
-    return pred
+    def f(userdata):
+        return knn.predict(userdata)
+    return f
 
