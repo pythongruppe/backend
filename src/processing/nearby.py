@@ -8,7 +8,7 @@ t0 = time.time()
 
 
 def search_by_coordinate_range(data, lat, lon, max_distance, algo):
-    distances = np.array([algo(lat, lon, row["latitude"], row["longitude"]) for (i, row) in data.iterrows()])
+    distances = np.array([algo(lat, lon, row.latitude, row.longitude) for row in data.itertuples()])
     return data.iloc[distances < max_distance]
 
 
@@ -47,7 +47,7 @@ def mpu_haversine(lat1, lon1, lat2, lon2):
 if __name__ == '__main__':
     data = pd.read_csv("new_data.csv")
     data = data[~(pd.isnull(data['latitude']) | pd.isnull(data['longitude']))]
-    results = search_by_coordinate_range(data, 55.837491199999995, 12.4346368, 1, mpu_haversine)[['zip', 'street']]
+    results = search_by_coordinate_range(data, 55.837491199999995, 12.4346368, 1, haversine)[['zip', 'street']]
 
     t1 = time.time()
 

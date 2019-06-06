@@ -33,5 +33,6 @@ def sanitize(data):
     columns = data.columns.intersection(zero_to_nan)
     data[columns] = data[columns].replace(0.0, np.NaN)
     data = data[data['cash_price'] >= 10_000]  # ignore false data
-    data = data[~ data.duplicated(subset=['street', 'zip'])]
+    data = data.reset_index(drop=True)
+    data = data.drop_duplicates(subset=['street', 'zip'])
     return data

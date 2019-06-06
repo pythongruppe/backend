@@ -1,5 +1,13 @@
 from dataclasses import dataclass, asdict
 from typing import List
+from src.processing.nearby import search_by_coordinate_range, haversine
+
+
+@dataclass
+class LocationFilter:
+    latitude: float = None
+    longitude: float = None
+    max_distance: float = None
 
 
 @dataclass
@@ -25,13 +33,24 @@ class FilterParameters:
     zip_codes: List = None
     property_types: List = None
 
+    nearby: LocationFilter = None
+
 
 def filter_data_frame(df, parameters: FilterParameters):
     query = create_pandas_query(parameters)
     if len(query.strip()) < 1:
-        return df
+        return filter_by_location(df, parameters)
     else:
-        return df.query(query)
+        return filter_by_location(df.query(query), parameters)
+
+
+def filter_by_location(df, parameters: FilterParameters):
+    print(parameters)
+    if parameters.nearby is None:
+        return df
+
+    return search_by_coordinate_range(df, parameters.nearby.get("latitude"), parameters.nearby.get("longitude"),
+                                      parameters.nearby.get("max_distance"), haversine)
 
 
 def create_pandas_query(parameters: FilterParameters):

@@ -19,7 +19,7 @@ memory = None
 
 
 def paginate(df, page_size, page_number):
-    start = (page_size - 1 * page_number)
+    start = (page_number - 1) * page_size
     end = start + page_size
     return df.iloc[start: end]
 
@@ -61,7 +61,6 @@ def get_estate_prediction():
     prediction = predictor(user_data_df)
     print(prediction)
     return 'everything ok'
-
 
 
 @app.route('/', methods=['GET', 'POST'])
