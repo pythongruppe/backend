@@ -18,7 +18,9 @@ def write_or_append(save, df, append):
     if append:
         exists = os.path.isfile(save)
         current = pd.read_csv(save) if exists else pd.DataFrame()
-        sanitize(pd.concat([current, df], ignore_index=True, sort=True)).to_csv(save, index=False)
+        sanitize(pd.concat([current, df], ignore_index=False, sort=True).reset_index(drop=True)) \
+            .reset_index(drop=True) \
+            .to_csv(save, index=False)
         if exists:
             print(f'Appended to {save}')
         else:
@@ -33,6 +35,5 @@ def sanitize(data):
     columns = data.columns.intersection(zero_to_nan)
     data[columns] = data[columns].replace(0.0, np.NaN)
     data = data[data['cash_price'] >= 10_000]  # ignore false data
-    data = data.reset_index(drop=True)
-    data = data.drop_duplicates(subset=['street', 'zip'])
+    data = data.drop_duplicates(subset=['street', 'zip'], keep="last", inplace=False)
     return data

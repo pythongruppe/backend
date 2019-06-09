@@ -10,7 +10,7 @@ columns_to_keep = [
 ]
 
 columns_to_rename = {
-    'size': 'area_estate', 
+    'size': 'area_estate',
     'lotSize': 'area_property',
     'basementSize': 'area_basement',
     'zipCode': 'zip',
@@ -21,6 +21,7 @@ columns_to_rename = {
     'propertyType': 'property_type',
     'createdDate': 'created'
 }
+
 
 def get_results_for_page(page_number, page_size):
     url = f'https://api.boliga.dk/api/v2/search/results?page={page_number}&pageSize={page_size}'
@@ -41,7 +42,13 @@ def get_all_results(max_results):
             df = pd.DataFrame(results[0:max_results])  # ensure that we only get max_results
             df = df[columns_to_keep]
             df.rename(columns=columns_to_rename, inplace=True)
+            df = preprocess(df)
             return df
+
+
+def preprocess(df):
+    df['street'] = df['street'].map(lambda x: x.split(',')[0])
+    return df
 
 
 if __name__ == '__main__':

@@ -7,23 +7,26 @@ import traceback
 from src.Memory import Memory
 from flask import Response, jsonify
 from flask_cors import CORS
-import json
-import numpy as np
-import pandas as pd
-from src.machine_learning.estate_type_prediction import create_estimator
 from src.collection.types import PropertyType
-from ml import get_predictors, _create_predictor
+from ml import get_predictors
 import pandas as pd
+from src.logic.graphs import create_distribution_graphs, create_graph_cache
 
 app = Flask(__name__)
 CORS(app)
 memory = None
+graphCache = None
 
 
 def paginate(df, page_size, page_number):
     start = (page_number - 1) * page_size
     end = start + page_size
     return df.iloc[start: end]
+
+
+@app.route('/graphs', methods=['GET'])
+def graphs():
+    return jsonify(create_distribution_graphs(graphCache))
 
 
 @app.route('/filter', methods=['POST'])
@@ -60,7 +63,10 @@ def hello_world():
         return input_to_database(request.data)
     return 'Hello World!'
 
+
 cash_predictor, monthly_payment_predictor, down_payment_predictor = get_predictors()
+
+
 @app.route('/predict', methods=['POST'])
 def ml():
     content = request.json
@@ -71,13 +77,15 @@ def ml():
     down_payment_prediction = down_payment_predictor(df)
     d = {'cash_prediction': cash_predition.iloc[0][0],
          'monthly_payment': monthly_payment_prediction.iloc[0][0],
-         'down_payment':down_payment_prediction.iloc[0][0]
-        }
+         'down_payment': down_payment_prediction.iloc[0][0]
+         }
     return jsonify(d)
+
 
 if __name__ == '__main__':
     print("loading memory")
     memory = Memory('new_data.csv')
+    graphCache = create_graph_cache(memory.data)
     print(f'loaded {len(memory.data)} records.')
 
     app.run()
