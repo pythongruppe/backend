@@ -11,7 +11,7 @@ def create_heat_map(df, key, save_file, query):
         df = df.query(query)
 
     max_value = df['cash_price'].max()
-    f_map = folium.Map(location=[55.748433, 10.563504], zoom_start=8)  # center on denmark
+    f_map = folium.Map(location=[55.748433, 10.563504], zoom_start=7)  # center on denmark
     h_map = HeatMap(
         list(zip(df['latitude'], df['longitude'], df[key])),
         min_opacity=0.5,
