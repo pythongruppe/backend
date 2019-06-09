@@ -12,6 +12,8 @@ import numpy as np
 import pandas as pd
 from src.machine_learning.estate_type_prediction import create_estimator
 from src.collection.types import PropertyType
+from ml import get_predictors, _create_predictor
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -51,18 +53,6 @@ def prepare(df):
     return df.fillna('NaN')
 
 
-@app.route('/estate', methods=['POST'])
-def get_estate_prediction():
-    data = request.data
-
-    user_data = json.loads(data)
-    user_data_df = pd.DataFrame([user_data])
-    predictor = create_estimator(memory.data)
-    prediction = predictor(user_data_df)
-    print(prediction)
-    return 'everything ok'
-
-
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
     if request.method == 'POST':
@@ -70,16 +60,26 @@ def hello_world():
         return input_to_database(request.data)
     return 'Hello World!'
 
-
-# @app.route('/getAllIds', methods=['GET'])
-# def show_ids():
-# return house_ids()
-
+cash_predictor, monthly_payment_predictor, down_payment_predictor = get_predictors()
+@app.route('/predict', methods=['POST'])
+def ml():
+    content = request.json
+    d = dict(content)
+    df = pd.DataFrame.from_dict({key: [value] for key, value in d.items()})
+    cash_predition = cash_predictor(df)
+    monthly_payment_prediction = monthly_payment_predictor(df)
+    down_payment_prediction = down_payment_predictor(df)
+    d = {'cash_prediction': cash_predition.iloc[0][0],
+         'monthly_payment': monthly_payment_prediction.iloc[0][0],
+         'down_payment':down_payment_prediction.iloc[0][0]
+        }
+    return jsonify(d)
 
 if __name__ == '__main__':
     print("loading memory")
     memory = Memory('new_data.csv')
     print(f'loaded {len(memory.data)} records.')
+
     app.run()
 
 # check i can get data

@@ -8,23 +8,36 @@ from sklearn.model_selection import train_test_split
 
 data = pd.read_csv("new_data.csv")
 
-def create_predictor(df, target, drop_columns):
+def _create_predictor(df, target, keep_columns):
     df = df.fillna(0)
-    X = df.drop(columns=[target, *drop_columns], axis=1)
+    #X = df.drop(columns=[target, *drop_columns], axis=1)
+    X = df[keep_columns]
     y = df[target]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4)
 
     model = LinearRegression()
     model.fit(X_train,y_train)
+    x = model.predict(X_test)
+    #print(X_test.columns)
 
-    print(model.predict(X_test))
+    def predict_input(df):
+        #print(df.columns)
+        x = model.predict(df)
+        #print(pd.DataFrame(np.maximum(x,0)))
+        return pd.DataFrame(np.maximum(x, 0))
 
-    return model
+    return predict_input
 
-cash_predictor = create_predictor(data, "cash_price", ('street', 'city', 'zip', 'property_type'))
-monthly_payment_predictor = create_predictor(data, "monthly_payment", ('street', 'city', 'zip', 'property_type'))
-down_payment_predictor = create_predictor(data, "down_payment", ('street', 'city', 'zip', 'property_type'))
+
+columns_keep = ["area_basement", "area_estate", "area_property", "property_type", "rooms", "year", "zip"]
+cash_predictor = _create_predictor(data, "cash_price", columns_keep)
+monthly_payment_predictor = _create_predictor(data, "monthly_payment", columns_keep)
+down_payment_predictor = _create_predictor(data, "down_payment", columns_keep)
+
+def get_predictors():
+    return cash_predictor, monthly_payment_predictor, down_payment_predictor
+
 
 # print(cash_predictor, monthly_payment_predictor, down_payment_predictor)
 
