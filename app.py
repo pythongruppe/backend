@@ -4,13 +4,13 @@ from rest_errors import json_error
 from src.processing.numeric import find_min_mean_max
 import traceback
 from src.Memory import Memory
-from flask import Response, jsonify
+from flask import Response, jsonify, send_from_directory
 from flask_cors import CORS
 from src.collection.types import PropertyType
 from src.logic.graphs import create_distribution_graphs, create_graph_cache
 from src.logic.prediction import create_cost_predictor
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='public')
 CORS(app)
 memory = None
 graph_cache = None
@@ -26,6 +26,11 @@ def paginate(df, page_size, page_number):
 @app.route('/graphs', methods=['GET'])
 def graphs():
     return jsonify(create_distribution_graphs(graph_cache))
+
+#
+# @app.route('/static/<path:path>')
+# def serve_static(path):
+#     return send_from_directory('public', path)
 
 
 @app.route('/filter', methods=['POST'])
