@@ -62,10 +62,10 @@ def cost_prediction():
 
 
 if __name__ == '__main__':
-    print("loading memory")
+    print('Loading memory ...')
     memory = Memory('new_data.csv')
     graph_cache = create_graph_cache(memory.data)
-    print(f'loaded {len(memory.data)} records.')
+    print(f'Loaded {len(memory.data)} records.')
     cost_predictor = create_cost_predictor(memory.data)
 
     app.run()
