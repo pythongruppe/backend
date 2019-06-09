@@ -30,8 +30,12 @@ def rooms(data):
     return fig_to_data_uri(graph)
 
 
+def get_property_type_name(code):
+    return PropertyType(code).name
+
+
 def property_types(data):
-    graph, ax = create_bar_distribution_graph(data, 'property_type', lambda x: PropertyType(x).name)
+    graph, ax = create_bar_distribution_graph(data, 'property_type', key_format=get_property_type_name)
     rotate_ticks(graph, ax, bottom_pad=0.25)
     return fig_to_data_uri(graph)
 

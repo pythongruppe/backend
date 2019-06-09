@@ -1,5 +1,4 @@
 from flask import Flask, request
-from src.Memory import input_to_database
 from src.processing.filtering import FilterParameters, filter_data_frame
 from rest_errors import json_error
 from src.processing.numeric import find_min_mean_max
@@ -8,14 +7,14 @@ from src.Memory import Memory
 from flask import Response, jsonify
 from flask_cors import CORS
 from src.collection.types import PropertyType
-from ml import get_predictors
-import pandas as pd
 from src.logic.graphs import create_distribution_graphs, create_graph_cache
+from src.logic.prediction import create_cost_predictor
 
 app = Flask(__name__)
 CORS(app)
 memory = None
-graphCache = None
+graph_cache = None
+cost_predictor = None
 
 
 def paginate(df, page_size, page_number):
@@ -26,7 +25,7 @@ def paginate(df, page_size, page_number):
 
 @app.route('/graphs', methods=['GET'])
 def graphs():
-    return jsonify(create_distribution_graphs(graphCache))
+    return jsonify(create_distribution_graphs(graph_cache))
 
 
 @app.route('/filter', methods=['POST'])
@@ -56,42 +55,17 @@ def prepare(df):
     return df.fillna('NaN')
 
 
-@app.route('/', methods=['GET', 'POST'])
-def hello_world():
-    if request.method == 'POST':
-        # assumed request.data is json with proper formatting / attributes NO checking atm.
-        return input_to_database(request.data)
-    return 'Hello World!'
-
-
-cash_predictor, monthly_payment_predictor, down_payment_predictor = get_predictors()
-
-
 @app.route('/predict', methods=['POST'])
-def ml():
-    content = request.json
-    d = dict(content)
-    df = pd.DataFrame.from_dict({key: [value] for key, value in d.items()})
-    cash_predition = cash_predictor(df)
-    monthly_payment_prediction = monthly_payment_predictor(df)
-    down_payment_prediction = down_payment_predictor(df)
-    d = {'cash_prediction': cash_predition.iloc[0][0],
-         'monthly_payment': monthly_payment_prediction.iloc[0][0],
-         'down_payment': down_payment_prediction.iloc[0][0]
-         }
-    return jsonify(d)
+def cost_prediction():
+    sent = dict(request.json)
+    return jsonify(cost_predictor(sent))
 
 
 if __name__ == '__main__':
     print("loading memory")
     memory = Memory('new_data.csv')
-    graphCache = create_graph_cache(memory.data)
+    graph_cache = create_graph_cache(memory.data)
     print(f'loaded {len(memory.data)} records.')
+    cost_predictor = create_cost_predictor(memory.data)
 
     app.run()
-
-# check i can get data
-# check i can read to file
-# check i will not read to file if already exists
-# create unit tests for this
-# refactor methods in memory.py into smaller methods

@@ -1,13 +1,31 @@
+import numpy as np
+import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
+columns_keep = ["area_basement", "area_estate", "area_property", "property_type", "rooms", "year", "zip"]
 
-def create_predictor(data, target, drop_columns):
-    x = data.drop(columns=[target, *drop_columns], axis=1)
-    y = data[target]
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4)
+def _create_predictor(df, target, keep_columns):
+    df = df.fillna(0)
+    X = df[keep_columns]
+    y = df[target]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4)
+
     model = LinearRegression()
-    model.fit(x_train, y_train)
+    model.fit(X_train, y_train)
+    x = model.predict(X_test)
 
-    return model
+    def predict_input(user_data):
+        user_data = user_data[columns_keep]
+        prediction = model.predict(user_data)
+        return pd.DataFrame(np.maximum(prediction, 0))
+
+    return predict_input
+
+
+def get_predictors(data):
+    return _create_predictor(data, "cash_price", columns_keep), \
+           _create_predictor(data, "monthly_payment", columns_keep), \
+           _create_predictor(data, "down_payment", columns_keep)
