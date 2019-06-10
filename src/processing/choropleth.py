@@ -28,13 +28,15 @@ def create_choropleth_map(df, zip_bounds, key, save_file, query):
     means['zip'] = means.index
 
     means = means[means[key] < 10_000_000]
+    bins = np.geomspace(means[key].min() - 1, means[key].max() + 1, num=9)
 
     c_map = folium.Choropleth(
         geo_data=zip_bounds,
         data=means,
         fill_color='YlOrRd',
         columns=['zip', key],
-        key_on='feature.properties.nr'
+        key_on='feature.properties.nr',
+        bins=bins
     )
 
     c_map.add_to(f_map)
