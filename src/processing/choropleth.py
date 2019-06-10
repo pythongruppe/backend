@@ -14,25 +14,27 @@ def download_zip_bounds():
 
 
 def create_choropleth_map(df, zip_bounds, key, save_file, query):
-    df = df.dropna(subset=[key, 'longitude', 'latitude', 'zip'])
+    df = df.dropna(subset=[key, 'zip'])
     if query is not None:
         df = df.query(query)
 
     f_map = folium.Map(location=[55.748433, 10.563504], zoom_start=7)  # center on denmark
-    colors = np.ones(len(zip_bounds))
-    colors.fill(0xFF0000)
 
-    ine
+    features = zip_bounds['features']
+    for f in features:
+        f['properties']['nr'] = int(f['properties']['nr'])
+
+    means = df[['zip', key]].groupby('zip').mean()
+    means['zip'] = means.index
+
+    means = means[means[key] < 10_000_000]
 
     c_map = folium.Choropleth(
         geo_data=zip_bounds,
-        data=data[key],
-        columns=['zip', key],
-        key_on='feature.properties.nr',
+        data=means,
         fill_color='YlOrRd',
-        fill_opacity=0.7,
-        line_opacity=0.2,
-        legend_name='Population by FSA'
+        columns=['zip', key],
+        key_on='feature.properties.nr'
     )
 
     c_map.add_to(f_map)
