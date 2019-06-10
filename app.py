@@ -9,12 +9,16 @@ from flask_cors import CORS
 from src.collection.types import PropertyType
 from src.logic.graphs import create_distribution_graphs, create_graph_cache
 from src.logic.prediction import create_cost_predictor
+from src.machine_learning.estate_type_prediction import create_estimator
+import pandas as pd
 
 app = Flask(__name__, static_url_path='/static', static_folder='public')
 CORS(app)
 memory = None
 graph_cache = None
 cost_predictor = None
+property_predictor = None
+
 
 
 def paginate(df, page_size, page_number):
@@ -31,6 +35,15 @@ def graphs():
 # @app.route('/static/<path:path>')
 # def serve_static(path):
 #     return send_from_directory('public', path)
+
+@app.route('/estate', methods=["POST"])
+def classifer_prediction():
+    content = request.get_json()
+    d = dict(content)
+    df = pd.DataFrame.from_dict({key: [value] for key, value in d.items()})
+    return jsonify(str(property_predictor(df)[0]))
+
+
 
 
 @app.route('/filter', methods=['POST'])
@@ -65,12 +78,12 @@ def cost_prediction():
     sent = dict(request.json)
     return jsonify(cost_predictor(sent))
 
-
 if __name__ == '__main__':
     print('Loading memory ...')
     memory = Memory('new_data.csv')
     graph_cache = create_graph_cache(memory.data)
     print(f'Loaded {len(memory.data)} records.')
     cost_predictor = create_cost_predictor(memory.data)
+    property_predictor = create_estimator(memory.data)
 
     app.run()
