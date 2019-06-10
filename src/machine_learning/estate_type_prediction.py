@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data = pd.read_csv("new_data.csv")
 columns_keep = ["area_basement", "area_estate", "area_property", "rooms", "year", "zip"]
 
-def create_estimator(data):
+
+def create_pt_classifier(data):
     knn = KNeighborsClassifier()
     df = data
     df = df.fillna(0)
@@ -16,9 +16,14 @@ def create_estimator(data):
     X = df[columns_keep]
 
     knn.fit(X,y)
+    knn = KNeighborsClassifier(n_neighbors=3)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
-    def f(userdata):
-        x = knn.predict(userdata)
+    knn.fit(X, y)
+    acc = accuracy_score(y_test, knn.predict(X_test))
+
+    def f(user_data):
+        x = knn.predict(user_data)
         return x
 
     #decide optimal neighbor.
@@ -33,7 +38,7 @@ def create_estimator(data):
     X = X[mask]
     k = _decide_best_neighbors(X, y, df['property_type'].unique())
     knn = KNeighborsClassifier(n_neighbors=k)
-    return f
+    return f, acc
 
 
 def _decide_best_neighbors(X, y, neighbors):
