@@ -11,11 +11,11 @@ def _create_predictor(df, target, keep_columns):
     X = df[keep_columns]
     y = df[target]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0)
 
     model = LinearRegression()
     model.fit(X_train, y_train)
-    x = model.predict(X_test)
+    # x = model.predict(X_test)
 
     def predict_input(user_data):
         user_data = user_data[columns_keep]

@@ -42,7 +42,7 @@ def create_pt_classifier(data):
 
 def _decide_best_neighbors(X, y, neighbors):
     total_scores = []
-    X_train, X_test, y_train, _ = train_test_split(X, y, test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0, random_state=42)
     for k in neighbors:
         knn = KNeighborsClassifier(n_neighbors=k)
         scores = cross_val_score(knn, X_train, y_train, cv=10, scoring='accuracy')
