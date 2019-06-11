@@ -8,7 +8,7 @@ import numpy as np
 
 
 def download_zip_bounds():
-    response = requests.get("http://dawa.aws.dk/postnumre?format=geojson")
+    response = requests.get("https://raw.githubusercontent.com/ok-dk/dagi/master/geojson/postnumre.geojson")
     with open("zip_bounds.json", "w") as f:
         f.write(response.text)
 
@@ -22,7 +22,10 @@ def create_choropleth_map(df, zip_bounds, key, save_file, query):
 
     features = zip_bounds['features']
     for f in features:
-        f['properties']['nr'] = int(f['properties']['nr'])
+        try:
+            f['properties']['POSTNR_TXT'] = int(f['properties']['POSTNR_TXT'])
+        except:
+            pass
 
     means = df[['zip', key]].groupby('zip').mean()
     means['zip'] = means.index
@@ -35,7 +38,7 @@ def create_choropleth_map(df, zip_bounds, key, save_file, query):
         data=means,
         fill_color='YlOrRd',
         columns=['zip', key],
-        key_on='feature.properties.nr',
+        key_on='feature.properties.POSTNR_TXT',
         bins=bins
     )
 

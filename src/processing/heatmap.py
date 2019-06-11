@@ -10,18 +10,12 @@ def create_heat_map(df, key, save_file, query):
     if query is not None:
         df = df.query(query)
 
-    max_value = df['cash_price'].max()
+    max_value = df[key].max()
     f_map = folium.Map(location=[55.748433, 10.563504], zoom_start=7)  # center on denmark
     tuples = list(zip(df['latitude'], df['longitude'], df[key]))
 
-    h_map = HeatMap(
-        tuples,
-        min_opacity=0.5,
-        max_val=max_value,
-        radius=1, blur=0,
-        max_zoom=1)
-
-    f_map.add_child(h_map)
+    h_map = HeatMap(tuples, min_opacity=0.5, max_val=max_value, radius=3, blur=1)
+    h_map.add_to(f_map)
 
     save_dir = os.path.dirname(save_file)
     if not os.path.exists(save_dir):
