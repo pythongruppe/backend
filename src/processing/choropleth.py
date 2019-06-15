@@ -13,7 +13,7 @@ def download_zip_bounds():
         f.write(response.text)
 
 
-def create_choropleth_map(df, zip_bounds, key, save_file, query, max, unit):
+def create_choropleth_map(df, zip_bounds, key, save_file, query, max, unit, bins):
     df = df.dropna(subset=[key, 'zip'])
     if query is not None:
         df = df.query(query)
@@ -33,7 +33,7 @@ def create_choropleth_map(df, zip_bounds, key, save_file, query, max, unit):
     if max is not None:
         means = means[means[key] < max]
     means[key] = means[key] / unit
-    bins = np.geomspace(means[key].min() - (1 / unit), means[key].max() + (1 / unit), num=9)
+    bins = np.geomspace(means[key].min() - (1 / unit), means[key].max() + (1 / unit), num=bins + 1)
 
     c_map = folium.Choropleth(
         geo_data=zip_bounds,
@@ -73,6 +73,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--max', type=int, default=None, help='The upper bound for the data points.')
     parser.add_argument('-u', '--unit', type=int, default=1,
                         help='When given, all data points are first divided by the provided factor.')
+    parser.add_argument('-b', '--bins', type=int, default=6, help='The number of bins to create for the data.')
 
     args = vars(parser.parse_args())
     data = pd.read_csv(args['input'])
@@ -82,6 +83,7 @@ if __name__ == '__main__':
         features = json.loads(f.read())
         for key in keys:
             output = args['output'].replace('*', key)
-            _, _, data = create_choropleth_map(data, features, key, output, args['filter'], args['max'], args['unit'])
+            _, _, data = create_choropleth_map(data, features, key, output, args['filter'], args['max'], args['unit'],
+                                               args['bins'])
             print(f'{len(data)} properties were used to create the choropleth with key {key}.')
             print(f'Saved to {output}')
