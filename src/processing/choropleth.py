@@ -13,7 +13,7 @@ def download_zip_bounds():
         f.write(response.text)
 
 
-def create_choropleth_map(df, zip_bounds, key, save_file, query, max_value, unit, no_bins, spacing):
+def create_choropleth_map(df, zip_bounds, key, save_file, query, min_value, max_value, unit, no_bins, spacing):
     df = df.dropna(subset=[key, 'zip'])
     if query is not None:
         df = df.query(query)
@@ -29,6 +29,9 @@ def create_choropleth_map(df, zip_bounds, key, save_file, query, max_value, unit
 
     means = df[['zip', key]].groupby('zip').mean()
     means['zip'] = means.index
+
+    if min_value is not None:
+        means = means[means[key] >= min_value]
 
     if max_value is not None:
         means = means[means[key] <= max_value]
@@ -80,7 +83,8 @@ if __name__ == '__main__':
     parser.add_argument('key',
                         help="The key in the dataset, that is plotted on the heat-map. Use multiple keys by seperating the keys with commas.")
     parser.add_argument('-f', '--filter', type=str, default=None, help='An optional pandas query to apply to the data.')
-    parser.add_argument('-m', '--max', type=int, default=None, help='The upper bound for the data points.')
+    parser.add_argument('--min', type=int, default=None, help='The lower bound for the value.')
+    parser.add_argument('--max', type=int, default=None, help='The upper bound for the value.')
     parser.add_argument('-u', '--unit', type=int, default=1,
                         help='When given, all data points are first divided by the provided factor.')
     parser.add_argument('-b', '--bins', type=int, default=6, help='The number of bins to create for the data.')
@@ -94,7 +98,10 @@ if __name__ == '__main__':
         features = json.loads(f.read())
         for key in keys:
             output = args['output'].replace('*', key)
-            _, _, data = create_choropleth_map(data, features, key, output, args['filter'], args['max'], args['unit'],
+            _, _, data = create_choropleth_map(data, features, key, output, args['filter'],
+                                               args['min'],
+                                               args['max'],
+                                               args['unit'],
                                                args['bins'], args['spacing'])
             print(f'{len(data)} properties were used to create the choropleth with key {key}.')
             print(f'Saved to {output}')
