@@ -16,9 +16,9 @@ columns_to_keep = [
     'property_type',
     'udbetaling',
     'sq_meter_price',
-    'latitude',   # added by preprocess
+    'latitude',  # added by preprocess
     'longitude',  # added by preprocess
-    'created'     # added by preprocess
+    'created'  # added by preprocess
 ]
 
 columns_to_rename = {
@@ -32,6 +32,7 @@ columns_to_rename = {
     'postnummernavn': 'city',
     'udbetaling': 'down_payment',
 }
+
 
 def get_results_for_page(page_number, page_size):
     offset = (page_number - 1) * page_size
@@ -65,7 +66,7 @@ def preprocess(results):
 
         prices = result['prices']
         prices_len = len(prices)
-        if(prices is None or prices_len < 1):
+        if (prices is None or prices_len < 1):
             result['created'] = np.NaN
         else:
             result['created'] = prices[prices_len - 1]['dt']
@@ -88,8 +89,10 @@ types_conversion_table = {
     9: 7,
 }
 
+
 def convert_property_type(code):
-    return types_conversion_table.get(int(code), 10) # default 10
+    return types_conversion_table.get(int(code), 10)  # default 10
+
 
 if __name__ == '__main__':
     parser = create_arg_parser('Webscrape property data from bolighed.dk')

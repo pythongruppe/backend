@@ -13,7 +13,7 @@ def download_zip_bounds():
         f.write(response.text)
 
 
-def create_choropleth_map(df, zip_bounds, key, save_file, query, max, unit, bins):
+def create_choropleth_map(df, zip_bounds, key, save_file, query, max_value, unit, no_bins, spacing):
     df = df.dropna(subset=[key, 'zip'])
     if query is not None:
         df = df.query(query)
@@ -30,10 +30,18 @@ def create_choropleth_map(df, zip_bounds, key, save_file, query, max, unit, bins
     means = df[['zip', key]].groupby('zip').mean()
     means['zip'] = means.index
 
-    if max is not None:
-        means = means[means[key] < max]
+    if max_value is not None:
+        means = means[means[key] <= max_value]
+
+    means[key] = means[means[key] > 0]
     means[key] = means[key] / unit
-    bins = np.geomspace(means[key].min() - (1 / unit), means[key].max() + (1 / unit), num=bins + 1)
+    minimum = max(means[key].min(), means[key].min() - (1 / unit))
+    maximum = means[key].max() + (1 / unit)
+
+    if spacing == 'log':
+        bins = np.geomspace(minimum, maximum, num=no_bins + 1)
+    else:
+        bins = np.linspace(minimum, maximum, num=no_bins + 1)
 
     c_map = folium.Choropleth(
         geo_data=zip_bounds,
@@ -63,6 +71,8 @@ def get_zip_bounds(feature_collection):
     return result
 
 
+# sq_meter_price,cash_price,area_basement,area_estate,area_property,rooms,year
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Create and save to file a choropleth.")
     parser.add_argument('input', help='Path to input csv file')
@@ -74,6 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--unit', type=int, default=1,
                         help='When given, all data points are first divided by the provided factor.')
     parser.add_argument('-b', '--bins', type=int, default=6, help='The number of bins to create for the data.')
+    parser.add_argument('-s', '--spacing', type=str, default='lin', help='The bind spacing to use lin|log')
 
     args = vars(parser.parse_args())
     data = pd.read_csv(args['input'])
@@ -84,6 +95,6 @@ if __name__ == '__main__':
         for key in keys:
             output = args['output'].replace('*', key)
             _, _, data = create_choropleth_map(data, features, key, output, args['filter'], args['max'], args['unit'],
-                                               args['bins'])
+                                               args['bins'], args['spacing'])
             print(f'{len(data)} properties were used to create the choropleth with key {key}.')
             print(f'Saved to {output}')

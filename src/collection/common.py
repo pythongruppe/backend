@@ -34,6 +34,10 @@ def sanitize(data):
     zero_to_nan = ['area_basement', 'area_estate', 'area_property', 'cash_price', 'down_payment', 'rooms', 'year']
     columns = data.columns.intersection(zero_to_nan)
     data[columns] = data[columns].replace(0.0, np.NaN)
-    data = data[data['cash_price'] >= 10_000]  # ignore false data
+    mask = data['cash_price'] >= 10_000 & ((data['area_property'] >= 16) | (data['area_estate'] >= 16))
+    data = data[mask]  # ignore false data
+    print(data[data[['zip', 'street']].duplicated()])
+    print("before dropping duplicates=" + str(len(data)))
     data = data.drop_duplicates(subset=['street', 'zip'], keep="last", inplace=False)
+    print("after dropping duplicates=" + str(len(data)))
     return data
